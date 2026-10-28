@@ -175,9 +175,9 @@ Thông lượng khoảng 18.3 mẫu/giây.
 
 | Mức tải | Người dùng | Trung bình (ms) | 95% (ms) | Lỗi % | Thông lượng (mẫu/giây) |
 |---|---:|---:|---:|---:|---:|
-| Thấp | 20 | | | | |
-| Trung bình | 50 | | | | |
-| Cao | 100 | | | | |
+| Thấp | 20 | 6.81 | 8 | 	0.44 | 	121.16 |
+| Trung bình | 50 | 7.01 | 6 | 0.45 | 62.43 |
+| Cao | 100 | 5.78 | 6 | 0.46 | 25.46 |
 
 ## 8. Lỗi và rủi ro phát hiện
 
