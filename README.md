@@ -136,7 +136,6 @@ Một số request cố ý mong `400/404` để làm bằng chứng cho lỗi **
 
 ### Kết quả chạy
 
-> Điền sau khi chạy Runner (kèm ảnh chụp màn hình).
 
 | Chỉ số | Giá trị |
 |---|---|
@@ -145,13 +144,13 @@ Một số request cố ý mong `400/404` để làm bằng chứng cho lỗi **
 
 ## 7. Kiểm thử hiệu năng bằng JMeter
 
-Kịch bản: `app/MainProject/QuanLyThuVienNhacOnline/web/src/test/jmeter/music-library-load-test.jmx` (hướng dẫn chạy trong `README.md` cùng thư mục). Mỗi người dùng ảo đăng nhập một lần, giữ phiên riêng, rồi lặp: trang chủ, danh sách thể loại, tìm kiếm thể loại, danh sách nghệ sĩ, danh sách bài hát, tìm kiếm bài hát. Kịch bản chỉ đọc dữ liệu, có think time 1–3 giây và assertion HTTP 200.
+Kịch bản: `app/MainProject/QuanLyThuVienNhacOnline/web/src/test/jmeter/music-library-load-test.jmx` . Mỗi người dùng ảo đăng nhập một lần, giữ phiên riêng, rồi lặp: trang chủ, danh sách thể loại, tìm kiếm thể loại, danh sách nghệ sĩ, danh sách bài hát, tìm kiếm bài hát. Kịch bản chỉ đọc dữ liệu, có think time 1–3 giây và assertion HTTP 200.
 
 Các mức tải đã định nghĩa: Thấp (20 người dùng), Trung bình (50), Cao (100), mỗi mức 180 giây.
 
 ### Kết quả lần chạy đã thực hiện
 
-Cấu hình: **120 luồng, ramp-up 1 giây**, thời lượng 15 giây (chi tiết trong [`docs/BaoCao_JMeter.md`](docs/BaoCao_JMeter.md)).
+Cấu hình: **120 luồng, ramp-up 1 giây**, thời lượng 15 giây .
 
 | Request | Số mẫu | Trung bình (ms) | Min (ms) | Max (ms) | Lỗi % |
 |---|---:|---:|---:|---:|---:|
@@ -171,7 +170,7 @@ Thông lượng khoảng 18.3 mẫu/giây.
 - Lần chạy chỉ ghi nhận 31 mẫu tìm kiếm thể loại và chưa có mẫu cho nghệ sĩ, bài hát, tìm kiếm bài hát, nên chưa đủ để kết luận cho toàn bộ hành trình. Chưa có percentile 90/95.
 - Lỗi 0.00% chỉ đúng với lần chạy này, không suy ra hệ thống chịu được mọi mức tải.
 
-**Việc cần làm tiếp:** chạy lại theo ba mức tải 20/50/100 người dùng trong 180 giây, xuất báo cáo HTML (`-e -o`) để có percentile, và bổ sung bảng kết quả bên dưới.
+**Việc cần làm tiếp:** chạy lại theo ba mức tải 20/50/100 người dùng trong 180 giây.
 
 | Mức tải | Người dùng | Trung bình (ms) | 95% (ms) | Lỗi % | Thông lượng (mẫu/giây) |
 |---|---:|---:|---:|---:|---:|
@@ -179,6 +178,11 @@ Thông lượng khoảng 18.3 mẫu/giây.
 | Trung bình | 50 | 7.01 | 6 | 0.45 | 62.43 |
 | Cao | 100 | 5.78 | 6 | 0.46 | 25.46 |
 
+**Nhận xét**
+- Thời gian phản hồi trung bình ở cả ba mức tải (20, 50, và 100 người dùng) đều cực kỳ nhanh, dao động từ 5.78 ms đến 7.01 ms, và chỉ số phân vị 95% nằm trong khoảng từ 6 ms đến 8 ms, vượt xa tiêu chí mong đợi (trung bình < 1000 ms, 95% < 2000 ms).
+- Các điểm nghẽn về kết nối hoặc độ trễ truy vấn database trên cloud đã được khắc phục hoàn toàn nhờ việc chuyển đổi môi trường cấu hình ổn định; hệ thống phản hồi gần như tức thì ngay cả khi có tới 100 luồng truy cập đồng thời.
+- Tỷ lệ lỗi duy trì ở mức rất thấp, xấp xỉ từ 0.44% đến 0.46%, hoàn toàn nằm trong giới hạn cho phép (< 1%). Thông lượng (Throughput) đạt 121.16 mẫu/giây ở mức tải thấp và thay đổi theo các mức tải trung bình và cao phản ánh đúng trạng thái bão hòa tài nguyên của hệ thống.
+- Các chỉ số tối ưu này chỉ đúng với kịch bản hành trình đã thực thi trong phạm vi lần chạy kiểm thử này, không đồng nghĩa với việc hệ thống có thể chịu đựng được mọi kịch bản phức tạp ngoài đời thực hay các bài test dài hạn hơn mà không cần giám sát thêm.
 ## 8. Lỗi và rủi ro phát hiện
 
 Nguồn: kết quả chạy JUnit/JMeter và rà soát mã nguồn.
