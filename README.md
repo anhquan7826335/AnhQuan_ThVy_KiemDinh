@@ -62,12 +62,12 @@ File: [`docs/TestCase_QuanLyThuVienNhac.xlsx`](docs/TestCase_QuanLyThuVienNhac.x
 | User (Service) | 21 | 20 | 0 | 0 | 1 |
 | Controller | 39 | 32 | 6 | 0 | 1 |
 | Exception – Khác | 13 | 8 | 0 | 1 | 4 |
-| Đăng ký – Đăng nhập | 26 | 0 | 0 | 0 | 26 |
-| Phát nhạc – Tìm kiếm | 23 | 0 | 0 | 2 | 21 |
+| Đăng ký – Đăng nhập | 26 | 26 | 0 | 0 | 0 |
+| Phát nhạc – Tìm kiếm | 23 | 21 | 0 | 2 | 0 |
 | Playlist | 17 | 0 | 0 | 17 | 0 |
 | Yêu thích | 12 | 0 | 0 | 12 | 0 |
-| Hiệu năng JMeter | 12 | 3 | 2 | 0 | 7 |
-| **Tổng** | **242** | **135** | **8** | **32** | **67** |
+| Hiệu năng JMeter | 12 | 10 | 2 | 0 | 0 |
+| **Tổng** | **242** | **190** | **8** | **32** | **12** |
 
 Các nhóm *Đăng ký – Đăng nhập* và *Phát nhạc – Tìm kiếm* sẽ có kết quả sau khi chạy Postman (mục 6) hoặc kiểm thử thủ công trên giao diện. Các ca *Chưa test* ở nhóm Service là test repository, hiện chưa có trong repo.
 
