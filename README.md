@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Sinh viên** | Anh Quân, Thảo Vy _(ghi đầy đủ họ tên – MSSV)_ |
+| **Sinh viên** | Anh Quân - 23010680, Thảo Vy - 23010588 |
 | **Môn học** | Kiểm định phần mềm |
 | **Hệ thống được kiểm thử** | Music Library – quản lý thư viện nhạc online (Spring Boot 3.5, Spring Data JPA, Spring Security, Thymeleaf, MySQL) |
 | **Công cụ** | JUnit 5, Mockito, MockMvc, H2, Postman, Apache JMeter 5.6.3, Selenium WebDriver |
@@ -140,8 +140,8 @@ Một số request cố ý mong `400/404` để làm bằng chứng cho lỗi **
 
 | Chỉ số | Giá trị |
 |---|---|
-| Số request / assertion | |
-| Pass / Fail | |
+| Số request / assertion | 40 |
+| Pass / Fail | 35 / 5|
 
 ## 7. Kiểm thử hiệu năng bằng JMeter
 
