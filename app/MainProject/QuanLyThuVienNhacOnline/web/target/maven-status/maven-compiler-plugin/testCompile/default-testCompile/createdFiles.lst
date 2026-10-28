@@ -1,4 +1,14 @@
+com\musicmanager\web\controller\SongControllerTest.class
+com\musicmanager\web\integration\CrudFlowTest$TestBeans.class
+com\musicmanager\web\exception\GlobalExceptionTest.class
+com\musicmanager\web\controller\ArtistControllerTest.class
 com\musicmanager\web\service\ArtistServiceTest.class
+com\musicmanager\web\service\UserServiceTest.class
+com\musicmanager\web\controller\HomeControllerTest.class
+com\musicmanager\web\integration\CrudFlowTest.class
+com\musicmanager\web\controller\GenreControllerTest.class
+com\musicmanager\web\controller\TestMvc.class
+com\musicmanager\web\controller\UserControllerTest.class
 com\musicmanager\web\service\GenreServiceTest.class
 com\musicmanager\web\service\SongServiceTest.class
 com\musicmanager\web\WebApplicationTests.class

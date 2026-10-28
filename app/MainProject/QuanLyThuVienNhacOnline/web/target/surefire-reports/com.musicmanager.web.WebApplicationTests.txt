@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.musicmanager.web.WebApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 2.625 s -- in com.musicmanager.web.WebApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.964 s -- in com.musicmanager.web.WebApplicationTests

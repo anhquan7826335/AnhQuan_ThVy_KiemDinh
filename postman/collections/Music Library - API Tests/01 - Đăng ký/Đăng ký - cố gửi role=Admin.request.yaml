@@ -1,0 +1,23 @@
+$kind: http-request
+description: Role phải bị ép về User. Kiểm tra bằng cách đăng nhập tài khoản này rồi gọi GET /users (mong 403).
+url: "{{baseUrl}}/register"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: hack_{{$timestamp}}
+    email: h{{$timestamp}}@test.com
+    password: Passw0rd123
+    role: Admin
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Đăng ký thành công', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('registered');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 7000

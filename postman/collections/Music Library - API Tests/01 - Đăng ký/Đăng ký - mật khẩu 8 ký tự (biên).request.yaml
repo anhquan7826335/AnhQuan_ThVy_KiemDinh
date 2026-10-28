@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{baseUrl}}/register"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: edge_{{$timestamp}}
+    email: e{{$timestamp}}@test.com
+    password: "12345678"
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect /login?registered', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('registered');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 4000

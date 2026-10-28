@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.musicmanager.web.controller.SongControllerTest
 -------------------------------------------------------------------------------
-Tests run: 9, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.173 s <<< FAILURE! -- in com.musicmanager.web.controller.SongControllerTest
-com.musicmanager.web.controller.SongControllerTest.updateNotFound -- Time elapsed: 0.019 s <<< FAILURE!
+Tests run: 9, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.144 s <<< FAILURE! -- in com.musicmanager.web.controller.SongControllerTest
+com.musicmanager.web.controller.SongControllerTest.updateNotFound -- Time elapsed: 0.033 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<404> but was:<500>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
@@ -13,7 +13,7 @@ java.lang.AssertionError: Status expected:<404> but was:<500>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.musicmanager.web.controller.SongControllerTest.deleteNotFound -- Time elapsed: 0.013 s <<< FAILURE!
+com.musicmanager.web.controller.SongControllerTest.deleteNotFound -- Time elapsed: 0.009 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<404> but was:<500>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
@@ -24,7 +24,7 @@ java.lang.AssertionError: Status expected:<404> but was:<500>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.musicmanager.web.controller.SongControllerTest.createInvalid -- Time elapsed: 0.015 s <<< FAILURE!
+com.musicmanager.web.controller.SongControllerTest.createInvalid -- Time elapsed: 0.010 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<400> but was:<500>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)

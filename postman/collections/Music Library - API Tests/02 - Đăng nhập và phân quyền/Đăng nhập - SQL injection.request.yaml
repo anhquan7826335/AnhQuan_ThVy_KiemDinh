@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/login"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: "' OR '1'='1"
+    password: x
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect /login?error', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/login?error');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 6000

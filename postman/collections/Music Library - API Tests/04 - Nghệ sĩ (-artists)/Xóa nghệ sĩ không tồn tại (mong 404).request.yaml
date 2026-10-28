@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/artists/delete/id-khong-ton-tai"
+method: POST
+body:
+  type: urlencoded
+  content:
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('404', function () { pm.response.to.have.status(404); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 7000

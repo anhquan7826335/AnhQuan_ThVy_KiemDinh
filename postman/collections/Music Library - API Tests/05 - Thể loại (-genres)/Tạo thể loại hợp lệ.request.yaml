@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/genres/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    name: Genre {{$timestamp}}
+    informations: mô tả
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect về /genres', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/genres');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 3000

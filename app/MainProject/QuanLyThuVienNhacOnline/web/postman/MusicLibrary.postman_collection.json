@@ -1,0 +1,1931 @@
+{
+  "info": {
+    "name": "Music Library - API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Kiểm thử các endpoint của hệ thống quản lý thư viện nhạc. Ứng dụng render HTML (Thymeleaf) nên request dùng form-urlencoded và kiểm tra mã trạng thái / redirect. Chạy theo thứ tự thư mục 00 -> 06 (Runner). Không cần tài khoản admin: collection tự đăng ký một tài khoản thường để đăng nhập."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "csrf",
+      "value": ""
+    },
+    {
+      "key": "newUser",
+      "value": ""
+    },
+    {
+      "key": "newEmail",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Chuẩn bị",
+      "item": [
+        {
+          "name": "Lấy CSRF token (GET /login)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Chạy đầu tiên. Spring Security bật CSRF mặc định nên mọi POST cần _csrf."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Lấy _csrf token (Spring Security) từ HTML để dùng cho các request POST",
+                  "const m = pm.response.text().match(/name=\"_csrf\"[^>]*value=\"([^\"]+)\"/) || pm.response.text().match(/value=\"([^\"]+)\"[^>]*name=\"_csrf\"/);",
+                  "if (m) { pm.collectionVariables.set('csrf', m[1]); }",
+                  "pm.test('Trang trả về 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - Đăng ký",
+      "item": [
+        {
+          "name": "Đăng ký hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "{{newUser}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "{{newEmail}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Tạo tài khoản mới cho mỗi lần chạy",
+                  "const ts = Date.now();",
+                  "pm.collectionVariables.set('newUser', 'pm_user_' + ts);",
+                  "pm.collectionVariables.set('newEmail', 'pm_' + ts + '@test.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?registered', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('registered');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - trùng username",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "{{newUser}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "khac_{{newEmail}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /register?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/register?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - mật khẩu 7 ký tự",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "short_{{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "s{{$timestamp}}@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "1234567",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /register?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/register?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - mật khẩu 8 ký tự (biên)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "edge_{{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "e{{$timestamp}}@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "12345678",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?registered', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('registered');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - thiếu email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "noemail_{{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /register?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/register?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - thiếu username",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "x{{$timestamp}}@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /register?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/register?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng ký - cố gửi role=Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "hack_{{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "h{{$timestamp}}@test.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "role",
+                  "value": "Admin",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Role phải bị ép về User. Kiểm tra bằng cách đăng nhập tài khoản này rồi gọi GET /users (mong 403)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Đăng ký thành công', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('registered');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Đăng nhập và phân quyền",
+      "item": [
+        {
+          "name": "Chưa đăng nhập: GET /songs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /login', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Chưa đăng nhập: GET / (công khai)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "POST không có CSRF token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "x",
+                  "type": "text"
+                },
+                {
+                  "key": "artist",
+                  "value": "x",
+                  "type": "text"
+                },
+                {
+                  "key": "genre",
+                  "value": "x",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 Forbidden', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng nhập sai mật khẩu",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "{{newUser}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "sai_mat_khau",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng nhập - username không tồn tại",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "khong_ton_tai_xyz",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng nhập - SQL injection",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "' OR '1'='1",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "x",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng nhập - bỏ trống",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?error', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login?error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Đăng nhập đúng",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "{{newUser}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Passw0rd123",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Đăng nhập thành công (không về /login?error)', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.not.include('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Lấy CSRF mới sau đăng nhập (GET /songs)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs"
+              ]
+            },
+            "description": "Spring Security đổi CSRF token sau khi đăng nhập, nên phải lấy lại token từ một trang có form."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Lấy _csrf token (Spring Security) từ HTML để dùng cho các request POST",
+                  "const m = pm.response.text().match(/name=\"_csrf\"[^>]*value=\"([^\"]+)\"/) || pm.response.text().match(/value=\"([^\"]+)\"[^>]*name=\"_csrf\"/);",
+                  "if (m) { pm.collectionVariables.set('csrf', m[1]); }",
+                  "pm.test('Trang trả về 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "User thường truy cập /users (mong 403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 Forbidden', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "User thường tìm /users/search (mong 403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?keyword=a",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "a"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 Forbidden', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Bài hát (/songs)",
+      "item": [
+        {
+          "name": "Danh sách bài hát",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm kiếm: love",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/search?keyword=love",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "love"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm kiếm: không có keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "search"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK (trả tất cả)', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm kiếm: ký tự đặc biệt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/search?keyword=%27%25_",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "keyword",
+                  "value": "%27%25_"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Không lỗi 500', function () { pm.expect(pm.response.code).to.not.eql(500); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo bài hát hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "Postman Song",
+                  "type": "text"
+                },
+                {
+                  "key": "artist",
+                  "value": "Postman Artist",
+                  "type": "text"
+                },
+                {
+                  "key": "genre",
+                  "value": "Pop",
+                  "type": "text"
+                },
+                {
+                  "key": "releaseYear",
+                  "value": "2024",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "3:30",
+                  "type": "text"
+                },
+                {
+                  "key": "audioFilePath",
+                  "value": "https://example.com/test.mp3",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /songs', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/songs');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo bài hát thiếu tên (mong 400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "artist",
+                  "value": "A",
+                  "type": "text"
+                },
+                {
+                  "key": "genre",
+                  "value": "Pop",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Hiện trả 500 do GlobalException bắt Exception chung (lỗi D1) - request này làm bằng chứng."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Cập nhật bài hát không tồn tại (mong 404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/update/id-khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "update",
+                "id-khong-ton-tai"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "title",
+                  "value": "x",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Hiện trả 500 (lỗi D1)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Xóa bài hát không tồn tại (mong 404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs/delete/id-khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs",
+                "delete",
+                "id-khong-ton-tai"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Hiện trả 500 (lỗi D1)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 Not Found', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Nghệ sĩ (/artists)",
+      "item": [
+        {
+          "name": "Danh sách nghệ sĩ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm nghệ sĩ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/search?name=a",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "a"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm nghệ sĩ - từ khóa rỗng -> redirect",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/search?name= ",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": " "
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /artists', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/artists');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm nghệ sĩ - thiếu tham số (mong 400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "search"
+              ]
+            },
+            "description": "Hiện trả 500 (lỗi D1)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo nghệ sĩ hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Postman Artist {{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "VN",
+                  "type": "text"
+                },
+                {
+                  "key": "gender",
+                  "value": "Nam",
+                  "type": "text"
+                },
+                {
+                  "key": "informations",
+                  "value": "https://example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /artists', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/artists');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo nghệ sĩ tên rỗng (mong 400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": " ",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Xóa nghệ sĩ không tồn tại (mong 404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/artists/delete/id-khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "artists",
+                "delete",
+                "id-khong-ton-tai"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Thể loại (/genres)",
+      "item": [
+        {
+          "name": "Danh sách thể loại",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/genres",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tìm thể loại",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/genres/search?name=p",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "p"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo thể loại hợp lệ",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/genres/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "Genre {{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "informations",
+                  "value": "mô tả",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /genres', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/genres');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Tạo thể loại tên rỗng (mong 400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/genres/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Xóa thể loại không tồn tại (mong 404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/genres/delete/id-khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "genres",
+                "delete",
+                "id-khong-ton-tai"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Đăng xuất",
+      "item": [
+        {
+          "name": "Đăng xuất (POST /logout)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "_csrf",
+                  "value": "{{csrf}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect /login?logout', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login?logout');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Sau đăng xuất: GET /songs bị chuyển về /login",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/songs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "songs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Redirect về /login', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([301,302,303]);",
+                  "  pm.expect(pm.response.headers.get('Location') || '').to.include('/login');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        }
+      ]
+    }
+  ]
+}

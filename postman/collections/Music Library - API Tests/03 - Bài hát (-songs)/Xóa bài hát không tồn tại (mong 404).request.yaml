@@ -1,0 +1,15 @@
+$kind: http-request
+description: Hiện trả 500 (lỗi D1).
+url: "{{baseUrl}}/songs/delete/id-khong-ton-tai"
+method: POST
+body:
+  type: urlencoded
+  content:
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('404 Not Found', function () { pm.response.to.have.status(404); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 8000

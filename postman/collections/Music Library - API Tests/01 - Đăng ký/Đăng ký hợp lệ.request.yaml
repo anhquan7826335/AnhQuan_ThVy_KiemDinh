@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/register"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: "{{newUser}}"
+    email: "{{newEmail}}"
+    password: Passw0rd123
+    _csrf: "{{csrf}}"
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Tạo tài khoản mới cho mỗi lần chạy
+      const ts = Date.now();
+      pm.collectionVariables.set('newUser', 'pm_user_' + ts);
+      pm.collectionVariables.set('newEmail', 'pm_' + ts + '@test.com');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect /login?registered', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('registered');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 1000

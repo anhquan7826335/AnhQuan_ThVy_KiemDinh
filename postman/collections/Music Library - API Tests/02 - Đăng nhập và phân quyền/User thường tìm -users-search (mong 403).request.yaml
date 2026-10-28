@@ -1,0 +1,13 @@
+$kind: http-request
+name: User thường tìm /users/search (mong 403)
+url: "{{baseUrl}}/users/search?keyword=a"
+method: GET
+queryParams:
+  keyword: a
+scripts:
+  - type: afterResponse
+    code: pm.test('403 Forbidden', function () { pm.response.to.have.status(403); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 11000

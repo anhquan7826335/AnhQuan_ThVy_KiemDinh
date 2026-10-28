@@ -1,0 +1,17 @@
+$kind: http-request
+name: Tìm nghệ sĩ - từ khóa rỗng -> redirect
+url: "{{baseUrl}}/artists/search?name= "
+method: GET
+queryParams:
+  name: " "
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect về /artists', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/artists');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 3000

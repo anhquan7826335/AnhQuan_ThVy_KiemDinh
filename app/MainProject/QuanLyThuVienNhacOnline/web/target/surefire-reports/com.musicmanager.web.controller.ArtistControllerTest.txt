@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.musicmanager.web.controller.ArtistControllerTest
 -------------------------------------------------------------------------------
-Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 3.206 s <<< FAILURE! -- in com.musicmanager.web.controller.ArtistControllerTest
-com.musicmanager.web.controller.ArtistControllerTest.searchMissingParam -- Time elapsed: 0.040 s <<< FAILURE!
+Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.601 s <<< FAILURE! -- in com.musicmanager.web.controller.ArtistControllerTest
+com.musicmanager.web.controller.ArtistControllerTest.searchMissingParam -- Time elapsed: 0.022 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<400> but was:<500>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)

@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/songs/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    title: x
+    artist: x
+    genre: x
+scripts:
+  - type: afterResponse
+    code: pm.test('403 Forbidden', function () { pm.response.to.have.status(403); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 3000

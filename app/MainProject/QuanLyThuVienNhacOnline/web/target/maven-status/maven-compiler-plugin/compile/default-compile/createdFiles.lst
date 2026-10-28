@@ -3,6 +3,8 @@ com\musicmanager\web\controller\ArtistController.class
 com\musicmanager\web\service\ArtistService.class
 com\musicmanager\web\repository\ArtistRepository.class
 com\musicmanager\web\MusicManagerApplication.class
+com\musicmanager\web\controller\AuthController.class
+com\musicmanager\web\service\DatabaseUserDetailsService.class
 com\musicmanager\web\service\GenreService.class
 com\musicmanager\web\entity\User.class
 com\musicmanager\web\entity\Artist.class
@@ -15,6 +17,7 @@ com\musicmanager\web\controller\SongController.class
 com\musicmanager\web\entity\Genre.class
 com\musicmanager\web\entity\Song.class
 com\musicmanager\web\exception\ResourceNotFoundException.class
+com\musicmanager\web\config\SecurityConfig.class
 com\musicmanager\web\controller\HomeController.class
 com\musicmanager\web\exception\GlobalException.class
 com\musicmanager\web\repository\SongRepository.class

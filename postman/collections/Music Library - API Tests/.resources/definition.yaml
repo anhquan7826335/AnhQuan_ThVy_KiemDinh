@@ -1,0 +1,7 @@
+$kind: collection
+description: "Kiểm thử các endpoint của hệ thống quản lý thư viện nhạc. Ứng dụng render HTML (Thymeleaf) nên request dùng form-urlencoded và kiểm tra mã trạng thái / redirect. Chạy theo thứ tự thư mục 00 -> 06 (Runner). Không cần tài khoản admin: collection tự đăng ký một tài khoản thường để đăng nhập."
+variables:
+  baseUrl: http://localhost:8080
+  csrf: ""
+  newUser: ""
+  newEmail: ""

@@ -1,0 +1,18 @@
+$kind: http-request
+description: Hiện trả 500 do GlobalException bắt Exception chung (lỗi D1) - request này làm bằng chứng.
+url: "{{baseUrl}}/songs/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    title: ""
+    artist: A
+    genre: Pop
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('400 Bad Request', function () { pm.response.to.have.status(400); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 6000

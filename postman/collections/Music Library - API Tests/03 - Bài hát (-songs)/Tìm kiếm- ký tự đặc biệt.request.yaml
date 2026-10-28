@@ -1,0 +1,13 @@
+$kind: http-request
+name: "Tìm kiếm: ký tự đặc biệt"
+url: "{{baseUrl}}/songs/search?keyword=%27%25_"
+method: GET
+queryParams:
+  keyword: "%27%25_"
+scripts:
+  - type: afterResponse
+    code: pm.test('Không lỗi 500', function () { pm.expect(pm.response.code).to.not.eql(500); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 4000

@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/artists/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    name: Postman Artist {{$timestamp}}
+    country: VN
+    gender: Nam
+    informations: https://example.com
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect về /artists', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/artists');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 5000

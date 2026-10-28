@@ -1,0 +1,13 @@
+$kind: http-request
+name: "Tìm kiếm: love"
+url: "{{baseUrl}}/songs/search?keyword=love"
+method: GET
+queryParams:
+  keyword: love
+scripts:
+  - type: afterResponse
+    code: pm.test('200 OK', function () { pm.response.to.have.status(200); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 2000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/genres/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    name: ""
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('400', function () { pm.response.to.have.status(400); });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 4000

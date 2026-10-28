@@ -1,0 +1,19 @@
+$kind: http-request
+name: Đăng xuất (POST /logout)
+url: "{{baseUrl}}/logout"
+method: POST
+body:
+  type: urlencoded
+  content:
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect /login?logout', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/login?logout');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 1000

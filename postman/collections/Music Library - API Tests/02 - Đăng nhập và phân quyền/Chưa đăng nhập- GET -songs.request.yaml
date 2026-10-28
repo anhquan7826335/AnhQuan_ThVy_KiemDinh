@@ -1,0 +1,15 @@
+$kind: http-request
+name: "Chưa đăng nhập: GET /songs"
+url: "{{baseUrl}}/songs"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect về /login', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/login');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 1000

@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/songs/create"
+method: POST
+body:
+  type: urlencoded
+  content:
+    title: Postman Song
+    artist: Postman Artist
+    genre: Pop
+    releaseYear: "2024"
+    duration: 3:30
+    audioFilePath: https://example.com/test.mp3
+    _csrf: "{{csrf}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Redirect về /songs', function () {
+        pm.expect(pm.response.code).to.be.oneOf([301,302,303]);
+        pm.expect(pm.response.headers.get('Location') || '').to.include('/songs');
+      });
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 5000
