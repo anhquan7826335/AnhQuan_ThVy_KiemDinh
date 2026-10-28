@@ -1,0 +1,62 @@
+﻿
+[ERROR] Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time 
+elapsed: 3.206 s <<< FAILURE! -- in 
+com.musicmanager.web.controller.ArtistControllerTest
+[ERROR] 
+com.musicmanager.web.controller.ArtistControllerTest.searchMissingParam 
+-- Time elapsed: 0.040 s <<< FAILURE!
+[ERROR] Tests run: 10, Failures: 1, Errors: 0, Skipped: 0, Time 
+elapsed: 0.211 s <<< FAILURE! -- in 
+com.musicmanager.web.controller.GenreControllerTest
+[ERROR] 
+com.musicmanager.web.controller.GenreControllerTest.searchMissingParam 
+-- Time elapsed: 0.012 s <<< FAILURE!
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.013 s -- in com.musicmanager.web.controller.HomeControllerTest
+[ERROR] Tests run: 9, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 
+0.173 s <<< FAILURE! -- in 
+com.musicmanager.web.controller.SongControllerTest
+[ERROR] 
+com.musicmanager.web.controller.SongControllerTest.updateNotFound -- 
+Time elapsed: 0.019 s <<< FAILURE!
+[ERROR] 
+com.musicmanager.web.controller.SongControllerTest.deleteNotFound -- 
+Time elapsed: 0.013 s <<< FAILURE!
+[ERROR] 
+com.musicmanager.web.controller.SongControllerTest.createInvalid -- 
+Time elapsed: 0.015 s <<< FAILURE!
+[ERROR] Tests run: 8, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 
+0.146 s <<< FAILURE! -- in 
+com.musicmanager.web.controller.UserControllerTest
+[ERROR] 
+com.musicmanager.web.controller.UserControllerTest.searchMissingParam 
+-- Time elapsed: 0.010 s <<< FAILURE!
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.033 s -- in com.musicmanager.web.exception.GlobalExceptionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+6.409 s -- in com.musicmanager.web.integration.CrudFlowTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.372 s -- in com.musicmanager.web.service.ArtistServiceTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.144 s -- in com.musicmanager.web.service.GenreServiceTest
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.114 s -- in com.musicmanager.web.service.SongServiceTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 
+0.148 s -- in com.musicmanager.web.service.UserServiceTest
+[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time 
+elapsed: 2.625 s -- in com.musicmanager.web.WebApplicationTests
+[ERROR]   ArtistControllerTest.searchMissingParam:61 Status 
+expected:<400> but was:<500>
+[ERROR]   GenreControllerTest.searchMissingParam:61 Status 
+expected:<400> but was:<500>
+[ERROR]   SongControllerTest.createInvalid:70 Status expected:<400> but 
+was:<500>
+[ERROR]   SongControllerTest.deleteNotFound:98 Status expected:<404> 
+but was:<500>
+[ERROR]   SongControllerTest.updateNotFound:84 Status expected:<404> 
+but was:<500>
+[ERROR]   UserControllerTest.searchMissingParam:80 Status 
+expected:<400> but was:<500>
+[ERROR] Tests run: 138, Failures: 6, Errors: 0, Skipped: 1
+
+

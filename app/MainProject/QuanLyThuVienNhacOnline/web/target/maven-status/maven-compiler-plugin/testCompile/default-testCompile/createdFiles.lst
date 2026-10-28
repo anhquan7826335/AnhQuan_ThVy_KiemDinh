@@ -1,0 +1,4 @@
+com\musicmanager\web\service\ArtistServiceTest.class
+com\musicmanager\web\service\GenreServiceTest.class
+com\musicmanager\web\service\SongServiceTest.class
+com\musicmanager\web\WebApplicationTests.class
