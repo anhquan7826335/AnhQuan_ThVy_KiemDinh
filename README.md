@@ -144,14 +144,14 @@ Một số request cố ý mong `400/404` để làm bằng chứng cho lỗi **
 
 ## 7. Kiểm thử hiệu năng bằng JMeter
 
-Kịch bản: `app/MainProject/QuanLyThuVienNhacOnline/web/src/test/jmeter/music-library-load-test.jmx` . Mỗi người dùng ảo đăng nhập một lần, giữ phiên riêng, rồi lặp: trang chủ, danh sách thể loại, tìm kiếm thể loại, danh sách nghệ sĩ, danh sách bài hát, tìm kiếm bài hát. Kịch bản chỉ đọc dữ liệu, có think time 1–3 giây và assertion HTTP 200.
-
+Kịch bản: `app/MainProject/QuanLyThuVienNhacOnline/web/src/test/jmeter/music-library-load-test.jmx` (hướng dẫn chạy trong `README.md` cùng thư mục). Mỗi người dùng ảo đăng nhập một lần, giữ phiên riêng, rồi lặp: trang chủ, danh sách thể loại, tìm kiếm thể loại, danh sách nghệ sĩ, danh sách bài hát, tìm kiếm bài hát. Kịch bản chỉ đọc dữ liệu, có think time 1–3 giây và assertion HTTP 200.
 
 Các mức tải đã định nghĩa: Thấp (20 người dùng), Trung bình (50), Cao (100), mỗi mức 180 giây.
 
 ### Kết quả lần chạy đã thực hiện
 
-Cấu hình: **120 luồng, ramp-up 1 giây**, thời lượng 15 giây .
+Cấu hình: **120 luồng, ramp-up 1 giây**, thời lượng 15 giây (chi tiết trong [`docs/BaoCao_JMeter.md`](docs/BaoCao_JMeter.md)).
+
 | Request | Số mẫu | Trung bình (ms) | Min (ms) | Max (ms) | Lỗi % |
 |---|---:|---:|---:|---:|---:|
 | GET login page | 120 | 4 | 2 | 8 | 0.00 |
@@ -170,8 +170,7 @@ Thông lượng khoảng 18.3 mẫu/giây.
 - Lần chạy chỉ ghi nhận 31 mẫu tìm kiếm thể loại và chưa có mẫu cho nghệ sĩ, bài hát, tìm kiếm bài hát, nên chưa đủ để kết luận cho toàn bộ hành trình. Chưa có percentile 90/95.
 - Lỗi 0.00% chỉ đúng với lần chạy này, không suy ra hệ thống chịu được mọi mức tải.
 
-**Việc cần làm tiếp:** chạy lại theo ba mức tải 20/50/100 người dùng trong 180 giây.
-
+**Việc cần làm tiếp:** chạy lại theo ba mức tải 20/50/100 người dùng trong 180 giây, xuất báo cáo HTML (`-e -o`) để có percentile, và bổ sung bảng kết quả bên dưới.
 
 | Mức tải | Người dùng | Trung bình (ms) | 95% (ms) | Lỗi % | Thông lượng (mẫu/giây) |
 |---|---:|---:|---:|---:|---:|
@@ -179,72 +178,7 @@ Thông lượng khoảng 18.3 mẫu/giây.
 | Trung bình | 50 | 7.01 | 6 | 0.45 | 62.43 |
 | Cao | 100 | 5.78 | 6 | 0.46 | 25.46 |
 
-**Nhận xét**
-- Thời gian phản hồi trung bình ở cả ba mức tải (20, 50, và 100 người dùng) đều cực kỳ nhanh, dao động từ 5.78 ms đến 7.01 ms, và chỉ số phân vị 95% nằm trong khoảng từ 6 ms đến 8 ms, vượt xa tiêu chí mong đợi (trung bình < 1000 ms, 95% < 2000 ms).
-- Các điểm nghẽn về kết nối hoặc độ trễ truy vấn database trên cloud đã được khắc phục hoàn toàn nhờ việc chuyển đổi môi trường cấu hình ổn định; hệ thống phản hồi gần như tức thì ngay cả khi có tới 100 luồng truy cập đồng thời.
-- Tỷ lệ lỗi duy trì ở mức rất thấp, xấp xỉ từ 0.44% đến 0.46%, hoàn toàn nằm trong giới hạn cho phép (< 1%). Thông lượng (Throughput) đạt 121.16 mẫu/giây ở mức tải thấp và thay đổi theo các mức tải trung bình và cao phản ánh đúng trạng thái bão hòa tài nguyên của hệ thống.
-- Các chỉ số tối ưu này chỉ đúng với kịch bản hành trình đã thực thi trong phạm vi lần chạy kiểm thử này, không đồng nghĩa với việc hệ thống có thể chịu đựng được mọi kịch bản phức tạp ngoài đời thực hay các bài test dài hạn hơn mà không cần giám sát thêm.
-## 8. Kiểm thử giao diện bằng Selenium
-
-Bộ test nằm tại `app/MainProject/QuanLyThuVienNhacOnline/web/selenium/` (hướng dẫn chi tiết: [`selenium/README.md`](app/MainProject/QuanLyThuVienNhacOnline/web/selenium/README.md)). Selenium WebDriver (Python) kết hợp pytest điều khiển trình duyệt Chrome thao tác trực tiếp trên **chính hệ thống quản lý thư viện nhạc**, mô phỏng người dùng thật: đăng ký, đăng nhập, đăng xuất, phân quyền, tìm kiếm và quản lý bài hát, nghệ sĩ, thể loại. Tổng cộng **72 ca**, bám **40 mã** trong bảng test case (20 mã `TC_AUT`, 20 mã `TC_PLY`); tên test và docstring đều ghi mã TC để truy vết.
-
-| Nhóm | File | Số ca | Mã TC liên quan | Nội dung chính |
-|---|---|---:|---|---|
-| Xác thực và phân quyền | `test_auth.py` | 28 | `TC_AUT_01`–`24` (trừ 08, 09, 17, 20), `TC_PLY_11` | Đăng ký hợp lệ/không hợp lệ, trùng username/email, đăng nhập đúng/sai, SQL injection, chuyển hướng khi chưa đăng nhập, đăng xuất, nút Back, user thường vào `/users` |
-| Trang chủ, điều hướng | `test_navigation.py` | 7 | bổ sung | Thẻ chức năng và thanh điều hướng theo quyền, bấm từng mục |
-| Tìm kiếm và quản lý bài hát | `test_song.py` | 26 | `TC_PLY_01`–`10`, `12`, `15`–`22` | Tìm theo tên/nghệ sĩ/thể loại, hoa-thường, tiếng Việt, ký tự đặc biệt, thêm/sửa/xóa, liên kết file âm thanh |
-| Nghệ sĩ, thể loại | `test_artist_genre.py` | 11 | bổ sung | Thêm, sửa, xóa, tìm theo tên, kiểm tra ô nhập bắt buộc |
-
-**Kỹ thuật chính**
-
-- **Page Object Model**: `pages/pages.py` mô tả từng trang, kịch bản chỉ gọi hàm nghiệp vụ, không chứa locator.
-- **Explicit wait** (`WebDriverWait`), không dùng `sleep`; sau khi gửi form, test chờ trang cũ "stale" rồi mới kiểm tra.
-- **Modal Bootstrap**: thêm/sửa/xóa đều trong modal, và các modal sửa ở trang Artist/Genre dùng chung `id`, nên test khoanh vùng trong modal đang mở và tìm ô theo `name`.
-- **Kiểm tra hai lớp** cho dữ liệu sai: (1) trình duyệt chặn nhờ ràng buộc HTML5 (`required`, `minlength=8`, `type=url`); (2) bỏ qua HTML5 để xác nhận **server** vẫn từ chối.
-- **Dữ liệu độc lập**: bản ghi test có chuỗi ngẫu nhiên và được tự xóa sau khi chạy; test fail tự chụp ảnh màn hình.
-
-**Cách chạy**
-
-```bash
-cd app/MainProject/QuanLyThuVienNhacOnline/web
-mvn spring-boot:run                      # cửa sổ 1: chạy ứng dụng (cổng 8080)
-
-cd selenium                              # cửa sổ 2
-pip install -r requirements.txt
-pytest                                   # HEADLESS=1 để chạy ẩn trình duyệt
-```
-
-Hai test cần quyền Admin (`TC_AUT_24` và thẻ User Management ở trang chủ) chỉ chạy khi đặt biến môi trường `ADMIN_USER` và `ADMIN_PASSWORD`, vì tài khoản Admin không thể tạo qua form đăng ký (role bị ép về `User`). Bộ test ghi dữ liệu thật vào CSDL nên nên chạy trên CSDL kiểm thử; tài khoản `sel…` do test đăng ký chỉ quản trị viên xóa được.
-
-**Ca ghi nhận lỗi đã biết và ca chưa thực hiện được**
-
-| Loại | Test | Ý nghĩa |
-|---|---|---|
-| `xfail` | `test_d1_blank_title_should_not_show_500_page` | Lỗi **D1**: gửi tên bài hát trống (bỏ qua HTML5) phải ra lỗi 400 hoặc thông báo thân thiện, nhưng hệ thống hiện trang "Lỗi 500". Test mong đợi hành vi đúng nên được đánh dấu lỗi đã biết. |
-| `xfail` | `test_tc_ply_15_javascript_audio_path_is_rejected` | Lỗi **D8**: đường dẫn `javascript:alert(1)` đáng lẽ bị từ chối nhưng vẫn được lưu. |
-| `skip` | `test_tc_ply_17`, `test_tc_ply_18` | **Blocked (D7)**: chưa có trình phát nhúng (Play/Pause, chuyển bài). |
-
-`XFAIL` nghĩa là lỗi đã biết **vẫn còn**; khi lỗi được sửa, test chuyển thành `XPASS` và nên bỏ dấu `xfail` để thành ca hồi quy bình thường.
-
-### Kết quả chạy
-
-> Điền sau khi chạy `pytest` trên ứng dụng thật. Dòng cuối của `pytest` có dạng `N passed, N failed, N skipped, N xfailed`.
-
-| Nhóm | Số ca | Pass | Fail | XFail | Skipped |
-|---|---:|---:|---:|---:|---:|
-| Xác thực và phân quyền | 28 | 28 | 0 | 0 | 0 |
-| Trang chủ, điều hướng | 7 | 6 | 0 | 0 | 1 |
-| Bài hát | 26 | 22 | 0 | 2 | 2 |
-| Nghệ sĩ, thể loại | 11 | 10 | 0 | 0 | 1 |
-| **Tổng** | **72** | 66 | 0 | 2 | 4 |
-
-**Giới hạn**
-
-- Selenium không đọc được **mã trạng thái HTTP**, nên các ca 400/403/404/500 được nhận biết qua nội dung trang (ví dụ "Lỗi 500"); mã trạng thái chính xác đã được kiểm tra bằng Postman (mục 6).
-- Một số ca không thể thao tác qua form nên thuộc phạm vi JUnit/Postman: ép role `Admin` khi đăng ký (`TC_AUT_08`), mật khẩu lưu BCrypt (`TC_AUT_09`), POST thiếu CSRF (`TC_AUT_20`), xóa người dùng bằng GET (`TC_AUT_26`, lỗi D2).
-- Playlist, danh sách yêu thích và trình phát nhúng chưa có trong hệ thống (D7) nên chưa có kịch bản giao diện.
-
-## 9. Lỗi và rủi ro phát hiện
+## 8. Lỗi và rủi ro phát hiện
 
 Nguồn: kết quả chạy JUnit/JMeter và rà soát mã nguồn.
 
